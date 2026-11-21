@@ -1,0 +1,4 @@
+REVOKE ALL ON FUNCTION public.staff_role(),public.staff_area(),public.staff_department(),public.general_approver(),public.department_manager(text),public.operation_access(text) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.staff_role(),public.staff_area(),public.staff_department(),public.general_approver(),public.department_manager(text),public.operation_access(text) TO authenticated,service_role;
+CREATE OR REPLACE FUNCTION public.activate_company_owner() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN IF lower(NEW.email)='rayztechn26@gmail.com' AND NEW.email_confirmed_at IS NOT NULL THEN INSERT INTO public.user_roles(user_id,role) VALUES(NEW.id,'Admin') ON CONFLICT(user_id) DO NOTHING; END IF; RETURN NEW; END $$;
+REVOKE ALL ON FUNCTION public.activate_company_owner() FROM PUBLIC,anon,authenticated;

@@ -1,0 +1,3 @@
+CREATE FUNCTION public.guard_work_deletion() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF auth.uid() IS NOT NULL AND (public.staff_area()='' OR OLD.created_by<>auth.uid() OR OLD.status<>'Draft' OR jsonb_array_length(OLD.documents)>0 OR OLD.dependencies>0 OR EXISTS(SELECT 1 FROM jsonb_array_elements(OLD.history) h WHERE h->>'action' IN ('Submitted','Approved'))) THEN RAISE EXCEPTION 'Only assigned officers may delete their own unused Draft'; END IF; RETURN OLD; END $$;
+CREATE TRIGGER officer_only_work_deletion BEFORE DELETE ON public.erp_work FOR EACH ROW EXECUTE FUNCTION public.guard_work_deletion();
+REVOKE ALL ON FUNCTION public.guard_work_deletion() FROM PUBLIC,anon,authenticated;

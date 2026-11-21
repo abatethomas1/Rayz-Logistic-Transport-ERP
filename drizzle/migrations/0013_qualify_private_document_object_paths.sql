@@ -1,0 +1,2 @@
+DROP POLICY erp_private_file_read ON storage.objects;
+CREATE POLICY erp_private_file_read ON storage.objects FOR SELECT TO authenticated USING(bucket_id='erp-documents' AND EXISTS(SELECT 1 FROM public.erp_documents d WHERE d.object_path=storage.objects.name AND d.ready AND public.erp_document_read(d.id)));

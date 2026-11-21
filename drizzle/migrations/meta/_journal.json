@@ -1,0 +1,104 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795281340639,
+      "tag": "0000_permanent_staff_workspace",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795281632948,
+      "tag": "0001_verified_owner_and_department_assignments",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795281997906,
+      "tag": "0002_null_safe_staff_authorization",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795282013335,
+      "tag": "0003_deny_unassigned_staff",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795282026218,
+      "tag": "0004_officer_only_draft_deletion",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795282162921,
+      "tag": "0005_private_permission_helpers_and_administrator",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795282195738,
+      "tag": "0006_explicit_action_and_assignment_values",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795282657262,
+      "tag": "0007_production_master_data_and_freight_foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795282769081,
+      "tag": "0008_transactional_operational_posting_and_cost_snapshots",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795282930258,
+      "tag": "0009_private_operation_document_storage",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795283223751,
+      "tag": "0010_whole_etb_foreign_currency_snapshots",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795283323064,
+      "tag": "0011_customer_advances_allocations_and_authorized_reversals",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795283562978,
+      "tag": "0012_financial_posting_guards_and_tax_free_invoice_lines",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795283761732,
+      "tag": "0013_qualify_private_document_object_paths",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+CREATE TABLE public.erp_invoices (id text PRIMARY KEY, operation_id text NOT NULL REFERENCES public.erp_operations(id), amount numeric NOT NULL CHECK(amount>0), tax_amount numeric NOT NULL DEFAULT 0 CHECK(tax_amount=0), due date NOT NULL, issued date NOT NULL);
+GRANT SELECT ON public.erp_invoices TO authenticated; GRANT ALL ON public.erp_invoices TO service_role;
+ALTER TABLE public.erp_invoices ENABLE ROW LEVEL SECURITY;
+CREATE POLICY finance_invoice_headers_read ON public.erp_invoices FOR SELECT TO authenticated USING(public.operation_access(operation_id) AND (public.general_approver() OR public.staff_role()='Admin' OR public.staff_department()='finance'));
+CREATE TABLE public.erp_invoice_lines (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), invoice_id text NOT NULL REFERENCES public.erp_invoices(id), description text NOT NULL, amount numeric NOT NULL CHECK(amount>0), tax_amount numeric NOT NULL DEFAULT 0 CHECK(tax_amount=0));
+GRANT SELECT ON public.erp_invoice_lines TO authenticated; GRANT ALL ON public.erp_invoice_lines TO service_role;
+ALTER TABLE public.erp_invoice_lines ENABLE ROW LEVEL SECURITY;
+CREATE POLICY finance_invoice_lines_read ON public.erp_invoice_lines FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.erp_invoices i WHERE i.id=invoice_id));
+INSERT INTO public.erp_invoices SELECT id,operation_id,(data->>'amount')::numeric,0,(data->>'due')::date,(data->>'issued')::date FROM public.erp_records WHERE kind='invoices';
+INSERT INTO public.erp_invoice_lines(invoice_id,description,amount) SELECT id,'Freight and logistics services',amount FROM public.erp_invoices;
+CREATE FUNCTION public.erp_sync_invoice() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN IF NEW.kind='invoices' THEN INSERT INTO public.erp_invoices VALUES(NEW.id,NEW.operation_id,(NEW.data->>'amount')::numeric,0,(NEW.data->>'due')::date,(NEW.data->>'issued')::date) ON CONFLICT(id) DO NOTHING; INSERT INTO public.erp_invoice_lines(invoice_id,description,amount) SELECT NEW.id,'Freight and logistics services',(NEW.data->>'amount')::numeric WHERE NOT EXISTS(SELECT 1 FROM public.erp_invoice_lines WHERE invoice_id=NEW.id); END IF; RETURN NEW; END $$;
+CREATE TRIGGER sync_invoice_relations AFTER INSERT ON public.erp_records FOR EACH ROW EXECUTE FUNCTION public.erp_sync_invoice();
+CREATE FUNCTION public.erp_guard_container_identifiers() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF NEW.kind='operations' AND EXISTS(SELECT 1 FROM jsonb_array_elements_text(coalesce(NEW.data->'containers','[]')) c GROUP BY upper(trim(c)) HAVING count(*)>1) THEN RAISE EXCEPTION 'Container identifiers must be unique within this operation'; END IF; RETURN NEW; END $$;
+CREATE TRIGGER operation_container_uniqueness BEFORE INSERT ON public.erp_records FOR EACH ROW EXECUTE FUNCTION public.erp_guard_container_identifiers();
+DO $$ DECLARE definition text; BEGIN
+SELECT pg_get_functiondef('public.workspace_action(text,jsonb)'::regprocedure) INTO definition;
+definition:=replace(definition,'IF w.kind=''Payment'' THEN','IF w.kind=''Payment'' AND w.payload->>''paymentType'' IN (''Advance'',''Allocation'') THEN RAISE EXCEPTION ''Use the dedicated advance/allocation financial action''; END IF; IF w.kind=''Payment'' THEN');
+EXECUTE definition;
+SELECT pg_get_functiondef('public.erp_financial_action(text,jsonb)'::regprocedure) INTO definition;
+definition:=replace(definition,'cash.amount,w.submitted_by,w.details,now()','cash.amount,coalesce((SELECT actor_id FROM public.erp_audit WHERE record_id=w.id AND action=''Approved'' ORDER BY occurred_at DESC LIMIT 1),uid),w.details,now()');
+EXECUTE definition;
+END $$;
