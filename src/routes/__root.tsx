@@ -83,10 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rayz Logistic and Transport" },
+      { title: "Rayz Technologies | Logistics & Transport ERP" },
       { name: "description", content: "Connected freight operations, transport and finance." },
-      { name: "author", content: "Rayz Logistic and Transport" },
-      { property: "og:title", content: "Rayz Logistic and Transport" },
+      { name: "author", content: "Rayz Technologies PLC" },
+      { property: "og:title", content: "Rayz Technologies | Logistics & Transport ERP" },
       {
         property: "og:description",
         content: "Connected freight operations, transport and finance.",
@@ -105,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,

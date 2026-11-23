@@ -19,6 +19,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from .models import Company, PlatformAdministrator, Membership, Record, Document, AuditEvent, ExportJob, StaffInvitation
 from .serializers import CompanySerializer, MembershipSerializer, RecordSerializer, DocumentSerializer, ReportRequestSerializer, ExportJobSerializer
 from .policy import resolve_membership, require_company_admin, require_module, ROLE_AREA, GENERAL, MANAGER
+from . import platform
 from .services import scoped_records, require_edit, transition, audit, report_records, export_bytes, private_path, set_company_context
 
 class CompanyScope:
@@ -28,24 +29,55 @@ class CompanyScope:
         set_company_context(self.membership)
 
 class PlatformCompanyViewSet(viewsets.ModelViewSet):
+    """Platform Administration context: company lifecycle and configuration only, never business approvals."""
     serializer_class = CompanySerializer
     http_method_names = ['get', 'post', 'patch', 'head', 'options']
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
-        if not PlatformAdministrator.objects.filter(user=request.user, active=True).exists():
-            raise PermissionDenied('Rayz platform administrator required.')
+        platform.require_platform(request.user)
     def get_queryset(self):
         return Company.objects.order_by('slug')
     def perform_create(self, serializer):
+        platform.require_platform(self.request.user, 'platform.configure_companies')
         company = serializer.save()
-        AuditEvent.objects.create(actor=self.request.user, action='company_create', target=str(company.id))
+        AuditEvent.objects.create(company=company, actor=self.request.user, action='company_create', target=str(company.id), details={'context': 'platform_administration'})
     def perform_update(self, serializer):
+        platform.require_platform(self.request.user, 'platform.configure_companies')
+        if 'active' in self.request.data:
+            raise ValidationError('Use the audited activate or suspend action.')
         company = serializer.save()
-        AuditEvent.objects.create(actor=self.request.user, action='company_configure', target=str(company.id))
+        AuditEvent.objects.create(company=company, actor=self.request.user, action='company_configure', target=str(company.id), details={'context': 'platform_administration', 'fields': sorted(self.request.data)})
+    @action(detail=False, methods=['get'])
+    def context(self, request):
+        return Response({'permissions': platform.platform_permissions(request.user), 'businessApprovals': False})
+    @action(detail=False, methods=['get'])
+    def overview(self, request):
+        return Response(platform.overview())
+    def _set_active(self, request, active):
+        platform.require_platform(request.user, 'platform.configure_companies')
+        data = platform.ReasonSerializer(data=request.data); data.is_valid(raise_exception=True)
+        company = self.get_object(); company.active = active; company.save(update_fields=['active'])
+        platform.platform_audit(request.user, company, 'company_activate' if active else 'company_suspend', data.validated_data['reason'])
+        return Response(self.get_serializer(company).data)
+    @action(detail=True, methods=['post'])
+    def activate(self, request, pk=None):
+        return self._set_active(request, True)
+    @action(detail=True, methods=['post'])
+    def suspend(self, request, pk=None):
+        return self._set_active(request, False)
     @action(detail=True, methods=['post'], url_path='administrator-invitations')
     def administrator_invitation(self, request, pk=None):
+        platform.require_platform(request.user, 'platform.invite_company_admins')
         company = self.get_object()
         return create_invitation(request, company, platform=True)
+    @action(detail=True, methods=['get'], url_path='support')
+    def support(self, request, pk=None):
+        data = platform.ReasonSerializer(data={'reason': request.query_params.get('reason', '')}); data.is_valid(raise_exception=True)
+        return Response(platform.support_view(request.user, self.get_object(), data.validated_data['reason']))
+    @action(detail=True, methods=['post'], url_path='support-actions')
+    def support_actions(self, request, pk=None):
+        data = platform.SupportActionSerializer(data=request.data); data.is_valid(raise_exception=True)
+        return Response(platform.support_action(request.user, self.get_object(), data.validated_data))
 
 class CompanySettingsViewSet(CompanyScope, viewsets.GenericViewSet):
     serializer_class = CompanySerializer

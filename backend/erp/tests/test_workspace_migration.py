@@ -38,7 +38,8 @@ class WorkspaceMigrationTests(TestCase):
         return {'id': code, 'customer': f'{slug}-customer', 'origin': 'Port One', 'destination': 'Addis Ababa', 'type': 'Container', 'quantity': 1 if containers is None else len(containers), 'weight': 10000, 'charge': 25000, 'due': '2026-12-01', 'containers': ['CONT-1'] if containers is None else containers}
 
     def setUp(self):
-        self.client = APIClient()
+        # Match the HTTPS transport required by production SecurityMiddleware.
+        self.client = APIClient(HTTP_X_FORWARDED_PROTO='https')
         temp = tempfile.TemporaryDirectory(); self.addCleanup(temp.cleanup)
         override = override_settings(PRIVATE_DOCUMENT_ROOT=Path(temp.name)); override.enable(); self.addCleanup(override.disable)
 

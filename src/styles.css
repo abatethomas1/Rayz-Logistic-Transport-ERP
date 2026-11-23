@@ -1303,6 +1303,10 @@ progress::-webkit-progress-value {
     gap: 10px;
     display: flex;
   }
+  .app-header .brand { flex: 1; }
+  .app-header .brand-name { min-width: 0; }
+  .header-actions { flex-shrink: 0; }
+  .header-actions select { max-width: 85px; }
   .header-nav {
     display: none;
   }

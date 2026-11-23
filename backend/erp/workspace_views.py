@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .platform import membership_permissions, platform_admin, platform_permissions
 from .models import Membership, PlatformAdministrator, Record, Document
 from .policy import resolve_membership, DEPARTMENT, GENERAL, MANAGER, ROLE_AREA
 from .services import set_company_context, private_path, audit
@@ -41,7 +42,7 @@ class CompanyTokenView(TokenObtainPairView):
 @api_view(['GET'])
 def identity(request):
     memberships = Membership.objects.filter(user=request.user, active=True, company__active=True).select_related('company')
-    return Response({'user': {'id': str(request.user.pk), 'email': request.user.email, 'name': request.user.get_full_name() or request.user.username}, 'memberships': [{'id': str(m.id), 'company': str(m.company_id), 'name': m.company.name, 'role': m.role, 'branding': m.company.branding, 'enabled_modules': m.company.enabled_modules} for m in memberships], 'platformAdmin': PlatformAdministrator.objects.filter(user=request.user, active=True).exists()})
+    return Response({'user': {'id': str(request.user.pk), 'email': request.user.email, 'name': request.user.get_full_name() or request.user.username}, 'memberships': [{'id': str(m.id), 'company': str(m.company_id), 'name': m.company.name, 'role': m.role, 'branding': m.company.branding, 'enabled_modules': m.company.enabled_modules, 'permissions': membership_permissions(m)} for m in memberships], 'platformAdmin': bool(platform_admin(request.user)), 'platformPermissions': platform_permissions(request.user)})
 
 @api_view(['GET'])
 def workspace_snapshot(request):

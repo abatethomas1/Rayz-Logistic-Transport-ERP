@@ -54,3 +54,7 @@ use the editor.
 - Run external business-record/document queries under a non-superuser NOBYPASSRLS database role; migrations use separate privileged credentials so row security cannot be silently bypassed.
 - Keep Django tokens in HttpOnly same-origin cookies and proxy screen requests through server-only adapters; never expose tokens to browser storage or mix Cloud and Django writes.
 - Preserve existing screen DTOs through the Django workspace service, with company-keyed caches cleared on membership changes; generic record APIs are not a replacement for validated posting actions.
+- Exercise Django API tests over simulated HTTPS rather than disabling production redirect enforcement; this keeps transport security independent of functional acceptance.
+- Keep product-owned logo assets on public/platform surfaces and retain active-company branding inside workspaces; this prevents one client's identity from replacing the product owner's identity or vice versa.
+- Resolve company logos through a shared presentation component, with configured logo URLs taking precedence over bundled client defaults; branding must never be used to determine authorization.
+- Separate Platform Administration (company lifecycle/configuration) from Company Support (named, reason-audited permissions with a SELECT-only row policy); platform status never grants business approvals.

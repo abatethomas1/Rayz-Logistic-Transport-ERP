@@ -31,7 +31,6 @@ import { Route as AuthenticatedTransportRouteImport } from './routes/_authentica
 import { Route as AuthenticatedTripsRouteImport } from './routes/_authenticated/trips'
 import { Route as AuthenticatedOperationsOperationIdRouteImport } from './routes/_authenticated/operations_.$operationId'
 import { Route as AuthenticatedWorkspacesSectionRouteImport } from './routes/_authenticated/workspaces.$section'
-import { Route as ApiPublicGitPushRouteImport } from './routes/api/public/git-push'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -146,11 +145,6 @@ const AuthenticatedWorkspacesSectionRoute =
     path: '/workspaces/$section',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicGitPushRoute = ApiPublicGitPushRouteImport.update({
-  id: '/api/public/git-push',
-  path: '/api/public/git-push',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
   id: '/api/v1/$',
   path: '/api/v1/$',
@@ -179,7 +173,6 @@ export interface FileRoutesByFullPath {
   '/trips': typeof AuthenticatedTripsRoute
   '/operations/$operationId': typeof AuthenticatedOperationsOperationIdRoute
   '/workspaces/$section': typeof AuthenticatedWorkspacesSectionRoute
-  '/api/public/git-push': typeof ApiPublicGitPushRoute
   '/api/v1/$': typeof ApiV1SplatRoute
 }
 export interface FileRoutesByTo {
@@ -204,7 +197,6 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/operations/$operationId': typeof AuthenticatedOperationsOperationIdRoute
   '/workspaces/$section': typeof AuthenticatedWorkspacesSectionRoute
-  '/api/public/git-push': typeof ApiPublicGitPushRoute
   '/api/v1/$': typeof ApiV1SplatRoute
 }
 export interface FileRoutesById {
@@ -231,7 +223,6 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/operations_/$operationId': typeof AuthenticatedOperationsOperationIdRoute
   '/_authenticated/workspaces/$section': typeof AuthenticatedWorkspacesSectionRoute
-  '/api/public/git-push': typeof ApiPublicGitPushRoute
   '/api/v1/$': typeof ApiV1SplatRoute
 }
 export interface FileRouteTypes {
@@ -258,7 +249,6 @@ export interface FileRouteTypes {
     | '/trips'
     | '/operations/$operationId'
     | '/workspaces/$section'
-    | '/api/public/git-push'
     | '/api/v1/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -283,7 +273,6 @@ export interface FileRouteTypes {
     | '/'
     | '/operations/$operationId'
     | '/workspaces/$section'
-    | '/api/public/git-push'
     | '/api/v1/$'
   id:
     | '__root__'
@@ -309,7 +298,6 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/operations_/$operationId'
     | '/_authenticated/workspaces/$section'
-    | '/api/public/git-push'
     | '/api/v1/$'
   fileRoutesById: FileRoutesById
 }
@@ -319,7 +307,6 @@ export interface RootRouteChildren {
   CompaniesRoute: typeof CompaniesRoute
   PlatformRoute: typeof PlatformRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ApiPublicGitPushRoute: typeof ApiPublicGitPushRoute
   ApiV1SplatRoute: typeof ApiV1SplatRoute
 }
 
@@ -479,13 +466,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspacesSectionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/git-push': {
-      id: '/api/public/git-push'
-      path: '/api/public/git-push'
-      fullPath: '/api/public/git-push'
-      preLoaderRoute: typeof ApiPublicGitPushRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/v1/$': {
       id: '/api/v1/$'
       path: '/api/v1/$'
@@ -546,7 +526,6 @@ const rootRouteChildren: RootRouteChildren = {
   CompaniesRoute: CompaniesRoute,
   PlatformRoute: PlatformRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ApiPublicGitPushRoute: ApiPublicGitPushRoute,
   ApiV1SplatRoute: ApiV1SplatRoute,
 }
 export const routeTree = rootRouteImport

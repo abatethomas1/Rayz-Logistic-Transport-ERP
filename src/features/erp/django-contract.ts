@@ -1,8 +1,8 @@
 import type { Database, Json } from '@/integrations/supabase/types';
 
 type Row<K extends keyof Database['public']['Tables']> = Database['public']['Tables'][K]['Row'];
-export type CompanyMembership = { id: string; company: string; name: string; role: string; branding: { display_name?: string; logo_url?: string; primary_color?: string }; enabled_modules: string[] };
-export type DjangoSession = { user: { id: string; email: string; name: string }; memberships: CompanyMembership[]; activeCompany: string | null; platformAdmin: boolean };
+export type CompanyMembership = { id: string; company: string; name: string; role: string; branding: { display_name?: string; logo_url?: string; primary_color?: string }; enabled_modules: string[]; permissions?: string[] };
+export type DjangoSession = { user: { id: string; email: string; name: string }; memberships: CompanyMembership[]; activeCompany: string | null; platformAdmin: boolean; platformPermissions?: string[] };
 export type DjangoWorkspace = {
   userId: string; role: string | null; company: CompanyMembership;
   profile: { display_name: string; avatar_url: string }; records: { kind: string; id: string; data: Json }[];

@@ -1,6 +1,6 @@
 # Rayz shared Django ERP service
 
-One Django REST Framework service and one PostgreSQL database for Base, SAT, Yangtze and future client companies. This directory is an **externally hosted backend foundation**, not the backend currently serving the Lovable preview. Railway was selected by the user; no Railway service has been deployed or connected yet.
+One Django REST Framework service and one PostgreSQL database for Base, SAT, Yangtze and future client companies. The local Django service now serves the Lovable preview through same-origin adapters. Railway was selected by the user; deployment remains deferred. This is a locally verified application, not a production-complete ledger.
 
 ## Local frontend migration update
 
@@ -8,9 +8,11 @@ The ERP screens now use Django-only session, workspace, directory, staff, docume
 
 The compatibility endpoints under `/api/v1/workspace/` expose the existing screen shapes and transactional posting actions. They cover independent approvals, FX snapshots, freight dependencies, dispatch checks, trip delivery documents, invoices, payments, advances, allocations and cash reversals. Records still use company-owned envelopes rather than a complete dedicated relational ledger. Generic resource endpoints must not be used to bypass workspace posting.
 
-Verified locally: **56 Django PostgreSQL tests**, including workspace actions under a non-superuser NOBYPASSRLS role, and **62 frontend tests**. Browser verification used real temporary Django accounts: officer draft/submission, independent logistics-manager approval, posting and refresh read-back; Base-to-SAT membership switching removed Base records; mobile had no page overflow. Password reset, invitation role mapping and private document download denial were tested at API level. Hosted email, deployment, concurrency/load acceptance and full domain parity remain unverified.
+Verified again on 2026-11-21: **56 Django PostgreSQL tests** and **64 frontend tests**. API test clients simulate HTTPS so production redirects remain enforced. Browser verification used individual temporary Django accounts and a restricted PostgreSQL runtime login: operation creation, staff assignment, officer draft/submission, independent manager approval, posting and refresh read-back; Base-to-SAT switching denied the foreign direct URL; PDF/Excel files downloaded and parsed; mobile had no page overflow. Password reset, invitations and private document denial passed at API level. Hosted mail, deployment, concurrency/load acceptance and full domain parity remain unverified.
 
-Configure `INVITATION_URL` to your frontend's `/reset-password` page and SMTP privately before issuing real invitations. Existing Cloud accounts/data are untouched and are **not** automatically imported or assigned to a company. GitHub delivery to the requested existing repository remains blocked by read-only connector permissions; nothing was written to that repository.
+Configure `INVITATION_URL` to your frontend's `/reset-password` page and SMTP privately before issuing real invitations. Existing Cloud accounts/data are untouched and are **not** automatically imported or assigned to a company. Source was previously delivered to `abatethomas1/Rayz-Logistic-Transport-ERP`, review branch `lovable-erp-code`; this is not automatic two-way Git sync. Current status and release gates are in `docs/production-status.md`.
+
+The designated platform super administrator is `rayztechn26@gmail.com`. No Django account exists for that email yet. Create and verify its individual account locally, then run the existing operator-only `grant_platform_administrator` command with that account's username. Do not derive platform privileges from the email or use a shared staff password.
 
 The earlier foundation status and remaining-work notes below describe the pre-migration baseline; this update takes precedence for frontend adapter status.
 
@@ -101,4 +103,4 @@ Foreign detail IDs return 404; forged company selection or inactive membership r
 - Validate effective-dated rate cards and charge calculations, department staff assignment administration and detailed invoice numbering rules. Rate-card/category configuration currently stores bounded JSON lists, not dedicated validated rate-card entities.
 - Extend staging acceptance to concurrent invoice issuance, concurrent posting/settlement, full delivery, account migration, revocation during long-running exports and the final frontend workflows.
 
-Do not describe the existing preview as multi-company or this foundation as a fully migrated production ERP.
+The local preview has verified company selection and boundaries; do not describe it as a fully migrated or production-complete ERP. Historical pre-migration notes above are superseded by the local migration update and current acceptance report.

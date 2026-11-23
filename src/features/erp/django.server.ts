@@ -20,7 +20,14 @@ function saveTokens(tokens: { access: string; refresh?: string }) {
 }
 export class DjangoApiError extends Error { constructor(public status: number, message: string) { super(message); } }
 async function rawRequest(path: string, options: RequestInit = {}) {
-  const response = await fetch(new URL(path, apiBase()), { ...options, redirect: 'error' });
+  const url = new URL(path, apiBase());
+  let response: Response;
+  try {
+    // Workers support manual redirects; never forward credentials to another host.
+    response = await fetch(url, { ...options, redirect: 'manual' });
+  } catch {
+    throw new DjangoApiError(503, 'The ERP service is unavailable. Please try again when the service is running.');
+  }
   if (!response.ok) {
     let message = response.status === 401 ? 'Your session expired. Sign in again.' : response.status === 404 ? 'Record not found in your company.' : 'The Django service could not complete this request.';
     try { const data = await response.json() as Record<string, unknown>; const detail = data['detail'] || data['message']; if (typeof detail === 'string') message = detail; else { const first = Object.values(data)[0]; if (Array.isArray(first) && typeof first[0] === 'string') message = first[0]; } } catch { /* No provider body is exposed. */ }

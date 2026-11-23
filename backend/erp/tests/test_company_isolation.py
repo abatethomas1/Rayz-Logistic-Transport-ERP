@@ -48,7 +48,8 @@ class CompanyIsolationTests(TestCase):
         self.override.enable()
         self.addCleanup(self.temp.cleanup)
         self.addCleanup(self.override.disable)
-        self.client = APIClient()
+        # Match the HTTPS transport required by production SecurityMiddleware.
+        self.client = APIClient(HTTP_X_FORWARDED_PROTO='https')
 
     def login(self, company='base', role='general'):
         self.client.force_authenticate(user=self.people[company][role].user)

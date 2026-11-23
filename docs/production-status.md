@@ -1,5 +1,32 @@
 # Production ERP implementation status
 
+## Final local review — 2026-11-21
+
+This section is authoritative; historical Cloud/foundation notes below are retained as historical evidence, not current setup instructions.
+
+**Local verification passed, not production-finalized:** 56 Django PostgreSQL tests and 64 frontend tests. Previous 126 failures / 20 errors were caused by HTTP test requests being redirected by production HTTPS enforcement. Both API test clients now simulate HTTPS, without disabling production security. Migration consistency reports no changes; current frontend build reports `build OK`.
+
+- Browser acceptance used individual temporary Django users under the restricted `rayz_app` PostgreSQL login (`NOSUPERUSER`, `NOBYPASSRLS`): General Manager created an operation, Logistics Manager assigned an officer, officer created/submitted a bill, independent manager approved, officer posted, and refresh read-back retained the posted status.
+- PDF and Excel were downloaded and parsed; both contained the authorized operation. Base-to-SAT switching removed the Base operation, and its direct URL showed not-found. Sign-out redirected private pages to sign-in. Mobile at 390 × 844 had no page overflow; no page errors occurred.
+- Automated tests cover company-pair resource/mutation/search/export/document/job denial, independent approval, financial rules, revocation, invitation/reset and restricted database access. Concurrency/load, hosted mail and restore drills remain unverified.
+- Fixed the Django proxy's Worker-incompatible redirect option: it now uses manual redirects and never follows them with credentials. Unreachable service failures return a clear service-unavailable error instead of raw `fetch failed`; two regression tests cover these cases.
+- Temporary acceptance records were removed; their identities and memberships were deactivated while immutable audit history was retained.
+- Rayz's uploaded logo appears on sign-in and platform pages, with the supplied symbol as the favicon. Client workspace branding remains separate.
+- The uploaded Yangtze logo appears only in Yangtze's company selector/header. Desktop/mobile rendering and removal after switching to Base were verified; configured company logo URLs take precedence.
+- `rayztechn26@gmail.com` is the designated platform super administrator. No matching Django account exists yet; no shared password or email-driven automatic promotion was added. Secure individual onboarding and an explicit protected platform-role grant are required.
+- The repository review branch `lovable-erp-code` was previously uploaded to `abatethomas1/Rayz-Logistic-Transport-ERP`; this is API delivery, not verified two-way Git sync. Current review changes are saved as local project commits; external branch updates must be verified separately.
+- GitHub read-back on 2026-11-21 confirmed that branch still points to the earlier delivery commit `41e229f`; it does not yet contain this final review's changes.
+
+### Remaining release gates
+
+1. **Account onboarding:** designated administrator needs an individual verified Django account/password; production SMTP/invitation URLs are unavailable.
+2. **Domain/accounting completion:** dedicated relational ledger parity, general payable settlement, allocated-credit reversal and operational correction actions remain engineering work, not completed acceptance. Do not use as a final accounting system yet.
+3. **Migration decisions:** existing legacy account/data ownership and company mapping must be confirmed before import; no legacy records were reassigned.
+4. **Production configuration:** Railway access, HTTPS API URL, persistent storage, separate migration/runtime credentials, mail, backups/restores, export-job scheduling and staging concurrency/load acceptance are outstanding. Deployment remains deferred.
+5. **Invoice numbering:** company sequences/prefixes exist; the final production convention is not confirmed. The user-supplied `1,000,000.00` remains monetary display only.
+
+Local database and document files live in temporary sandbox storage; they are not production backups and can disappear on workspace restart. Follow `backend/README.md` for repeatable local configuration.
+
 ## Current local Django migration status
 
 The existing ERP screens now call the Django API exclusively for sign-in, workspace records, staff profiles/assignments, directories, reports and private documents. HttpOnly token cookies and membership-verified company selection replace browser Cloud sessions. The old Cloud data and accounts remain untouched; legacy ownership/account import is still required before real company use.

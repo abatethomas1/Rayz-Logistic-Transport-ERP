@@ -21,6 +21,8 @@ class Company(models.Model):
 class PlatformAdministrator(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
+    # Named company-support permissions; platform status alone never grants business approval authority.
+    support_permissions = models.JSONField(default=list, blank=True)
 
 class Membership(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

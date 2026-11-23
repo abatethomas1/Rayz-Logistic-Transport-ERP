@@ -4,7 +4,7 @@
 
 Rayz Technologies PLC owns the shared product. Base Logistics & Transport, SAT Logistics & Transport and Yangtze Logistics & Transport are client companies, not separate projects.
 
-The user selected an externally hosted Django REST Framework service on Railway. The new `backend/` directory contains a company-isolated Django API foundation, PostgreSQL migrations, private file handling, reports, tests and Railway deployment configuration. Its tests create Base, SAT and Yangtze in a separate local PostgreSQL database. No existing Cloud records or policies have been changed, and no external Railway deployment or frontend cutover has occurred. The current preview remains single-company until the existing workflows, authentication and records are migrated. See `backend/README.md` for setup and explicit remaining limitations.
+The user selected an externally hosted Django REST Framework service on Railway. `backend/` contains the company-isolated API, PostgreSQL migrations, private files, reports, tests and deployment configuration. The existing screens now use local Django adapters exclusively, with verified membership selection and company boundaries. On 2026-11-21, 56 backend and 64 frontend tests passed, plus signed-in operation/approval/export/company-switching browser acceptance under restricted PostgreSQL credentials. Existing Cloud records and policies remain unchanged; Railway deployment, legacy ownership/account import, full relational ledger parity and production acceptance remain outstanding. See `docs/production-status.md` for the authoritative release gates.
 
 ## Existing boundaries that require replacement
 

@@ -1,9 +1,15 @@
 # Logistics & Transport ERP
 
 ## Shared multi-company product
+- [ ] Enable designated super-admin login — blocked by individual Django account/password setup; existing Cloud passwords do not migrate automatically
+- [x] Apply the newly uploaded logo only to Yangtze company branding and verify company switching
+- [x] Apply uploaded Rayz Technology logo to product-owned pages and favicon, preserving tenant branding
+- [x] Verify designated platform administrator rayztechn26@gmail.com; activation tracked separately above because no Django account exists
+- [x] Final review: rerun all checks, verify signed-in desktop/mobile workflows and reconcile current setup/status documents
 - [x] Switch existing screen/authentication adapters to Django, add company context and verify officer/manager posting and company switching locally
-- [ ] Save to https://github.com/abatethomas1/Rayz-Logistic-Transport-ERP on a review branch (user changed target from rayztechn26 repo) — needs a GitHub connection with write access to that repository
-- [x] Verify local Django configuration with restricted PostgreSQL runtime credentials, 56 backend tests, 62 frontend tests and signed-in browser checks
+- [x] Saved to https://github.com/abatethomas1/Rayz-Logistic-Transport-ERP on branch `lovable-erp-code` (225 files, commit 41e229f, 2026-11-21)
+- [x] Fix Django test transport failures; 56 tests now pass with production HTTPS enforcement intact
+- [x] Verify local Django configuration with restricted PostgreSQL runtime credentials, 56 backend tests, 64 frontend tests and signed-in browser checks
 - [x] Review existing authorization, record identifiers, reports and directory boundaries
 - [x] Record product ownership and prepare the company-isolation implementation design
 - [x] Confirm backend hosting — externally hosted Django selected

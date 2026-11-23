@@ -21,6 +21,7 @@ import { WorkPanel } from "./approval-workspace";
 import { departmentFor, type Department } from "./approval-model";
 import { useStaffAuth } from "./auth";
 import { toast } from "sonner";
+import { CompanyLogo } from './company-logo';
 const modules = [
   { label: "Logistics", icon: Anchor },
   { label: "Transport", icon: Truck },
@@ -88,7 +89,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     <div className="workspace">
       <header className="app-header">
         <Link to="/" className="brand">
-          <div className="brand-mark">R</div>
+          <CompanyLogo company={company} />
           <div className="brand-name">
             {company.branding.display_name || company.name}<small>LOGISTICS &amp; TRANSPORT ERP</small>
           </div>
